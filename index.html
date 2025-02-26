@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nghe nhac de</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                font-family: Arial, sans-serif;
+                overflow: hidden;
+                position: relative;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1; 
+                object-fit: cover;
+            }
+    
+            .video-background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1; 
+                object-fit: cover;
+            }
+
+            .audio-container {
+              
+              max-width: 600px; /* Giới hạn chiều rộng tối đa */
+              margin: 0 auto; /* Căn giữa */
+              text-align: center; /* Căn giữa nội dung */
+            }
+
+            audio {
+              width: 100%; /* Để audio tự điều chỉnh kích thước */
+              max-width: 100%; /* Không vượt quá kích thước container */
+            }
+    
+            #audioPlayer {
+                margin-bottom: 20px;
+                width: 300px;
+            }
+            
+            #songTitle {
+                margin-top: 20px;
+                text-align: center;
+                border: 2px solid black; 
+                border-radius: 10px; 
+                font-weight: bold; 
+                padding: 15px; 
+                background-color : white;
+            }
+            .controls {
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+            }
+            
+            .controls button {
+                padding: 10px 20px;
+                cursor: pointer;
+                border-radius: 5px;
+                border: none;
+                background-color: white ;
+                color: black;
+                font-weight: bold;
+            }
+            
+            .controls button:hover {
+                background-color: white ;
+            }
+
+            #loopButton {
+                opacity: 0.5;
+            }
+            
+            #loopButton.active {
+                opacity: 1;
+            }
+    </style>
+</head>
+<body>
+    <video class="video-background" autoplay muted loop onended="this.play()">
+        <source src="https://files.catbox.moe/gw011g.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <div class="audio-container">
+    
+    <div id="songTitle"></div>
+    <audio controls autoplay id="audioPlayer">
+        <source id="audioSource" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    </div>
+    
+    <div class="controls">
+        <button onclick="previousSong()">◁</button>
+        <button onclick="toggleLoop()" id="loopButton">🔁</button>
+        <button onclick="nextSong()">▷</button>
+    </div>
+
+    <script>
+        var audioPlayer = document.getElementById('audioPlayer');
+        var songs = [
+            //aichim sosuke
+        'https://files.catbox.moe/8mx6py.mp3',
+            //nhạc neuvillete
+        'https://files.catbox.moe/a3sjxi.mp3',
+            //At God's Mercy
+        'https://files.catbox.moe/q4w8pt.mp3',
+            //carameldansen       
+        'https://files.catbox.moe/8kr0w7.mp3',
+            //bumblebee        
+        'https://files.catbox.moe/vlgsbu.mp3',
+            //sukuna        
+        'https://files.catbox.moe/b7xl8a.mp3',
+            //wrong time
+        'https://files.catbox.moe/d0ow60.mp3',
+            //nhìn em lần cuối 
+        'https://files.catbox.moe/ry2a6h.mp3',
+            //blow onthefloor
+        'https://files.catbox.moe/95hvis.mp3',
+            //sơn tùng
+        'https://files.catbox.moe/kvnfvq.mp3',
+            //huyr   
+        'https://files.catbox.moe/7c0o9w.mp3',
+            //kém duyên
+        'https://files.catbox.moe/1ymxdv.mp3',
+            //ex hate me
+        'https://files.catbox.moe/4cp32q.mp3',
+            //Mashup VPop
+        'https://files.catbox.moe/d04goh.mp3',
+            //Tìm lại bầu trời
+        'https://files.catbox.moe/8labtc.mp3',
+            //mất kết nối
+        'https://files.catbox.moe/d49elp.mp3',
+            //như anh đẫ thấy em
+        'https://files.catbox.moe/3h5ska.mp3',
+            //tìm lại bầu trời
+        'https://files.catbox.moe/syfeun.mp3',
+            //anh nhớ em
+        'https://files.catbox.moe/cnc58m.mp3',
+            //Die if you dont love me
+        'https://files.catbox.moe/i578tu.mp3',
+            //team tomodachi
+        'https://files.catbox.moe/ijs8l1.mp3',
+
+                    ];
+var songTitles = [
+                    'Treachery',
+                    'Est-ce que tu maimes',
+                    'At God Mercy',
+                    'Caramelldansen',
+                    'Sweet Little Bumblebee',
+                    'Sukuna Suite',
+                    'Wrong Times',
+                    'Nonstop Nhìn Em Lần Cuối',
+                    'Blow X On The Floor Remix',
+                    'List Sơn Tùng MTP',
+                    'List HuyR',
+                    'Kém Duyên',
+                    'Ex Hate Me',
+                    'Mashup VPop',
+                    'Tìm lại bầu trời',
+                    'Mất kết nối',
+                    'Như Anh Đã Thấy Em',
+                    'Tìm Lại Bầu Trời',
+                    'Anh Nhớ Em',
+                    'Die if you dont love me',
+                    'Team Tomodachi'
+                ];
+
+        
+                var currentIndex = 0;
+                var isLooping = false;
+                var loopButton = document.getElementById('loopButton');
+
+                function playCurrentSong() {
+                    audioPlayer.src = songs[currentIndex];
+                    audioPlayer.play();
+                    document.getElementById('songTitle').innerHTML = songTitles[currentIndex];
+                }
+
+                function previousSong() {
+                    currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+                    playCurrentSong();
+                }
+
+                function toggleLoop() {
+                    isLooping = !isLooping;
+                    audioPlayer.loop = isLooping;
+                    loopButton.classList.toggle('active');
+                    
+                    // Nếu bật loop, tắt auto next song
+                    if (isLooping) {
+                        audioPlayer.removeEventListener('ended', nextSong);
+                    } else {
+                        audioPlayer.addEventListener('ended', nextSong);
+                    }
+                }
+
+                function nextSong() {
+                    currentIndex = (currentIndex + 1) % songs.length;
+                    playCurrentSong();
+                }
+
+                // Tự động chuyển bài khi kết thúc
+                audioPlayer.addEventListener('ended', nextSong);
+
+                // Phát bài đầu tiên khi trang load
+                window.onload = function() {
+        playCurrentSong();
+        // Thêm promise để xử lý autoplay
+        var playPromise = audioPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                // Autoplay started successfully
+            })
+            .catch(error => {
+                // Show a "Play" button so that user can start playback manually
+                console.log("Autoplay was prevented. Please click play to start audio.");
+            });
+        }
+    };
+
+    // Thêm event listener cho user interaction
+    document.addEventListener('click', function() {
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+        }
+    }, { once: true });
+    </script>
+</body>
+</html>
